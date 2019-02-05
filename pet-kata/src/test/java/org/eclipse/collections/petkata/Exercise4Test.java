@@ -10,21 +10,19 @@
 
 package org.eclipse.collections.petkata;
 
-import java.util.AbstractMap;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.list.primitive.IntList;
+import org.eclipse.collections.api.set.primitive.IntSet;
+import org.eclipse.collections.impl.block.factory.primitive.IntPredicates;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.FastList;
+import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.eclipse.collections.impl.test.Verify;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * In this set of tests, wherever you see .stream() replace it with an Eclipse Collections alternative.
@@ -42,47 +40,61 @@ public class Exercise4Test extends PetDomainForKata
                 .map(pet -> pet.getAge())
                 .collect(Collectors.toCollection(FastList::new));
 
+        IntList agesLazy = this.people.asLazy().flatCollect(Person::getPets).collectInt(Pet::getAge).toList();
         // Try to use an IntSet here instead
-        Set<Integer> uniqueAges = petAges.toSet();
+        IntSet uniqueAges = agesLazy.toSet();
+        // Set<Integer> uniqueAges = petAges.toSet();
         // IntSummaryStatistics is a class in JDK 8 - Try and use it with MutableIntList.forEach()
-        IntSummaryStatistics stats = petAges.stream().mapToInt(i -> i).summaryStatistics();
+        //IntSummaryStatistics stats = petAges.stream().mapToInt(i -> i).summaryStatistics();
+        IntSummaryStatistics stats = new IntSummaryStatistics();
+        agesLazy.forEach(stats::accept);
         // Is a Set<Integer> equal to an IntSet?
         // Hint: Try IntSets instead of Sets as the factory
-        Assert.assertEquals(Sets.mutable.with(1, 2, 3, 4), uniqueAges);
+        // Assert.assertEquals(Sets.mutable.with(1, 2, 3, 4), uniqueAges);
+        Assert.assertEquals(IntHashSet.newSetWith(1,2,3,4),uniqueAges);
         // Try to leverage min, max, sum, average from the Eclipse Collections primitive api
-        Assert.assertEquals(stats.getMin(), petAges.stream().mapToInt(i -> i).min().getAsInt());
-        Assert.assertEquals(stats.getMax(), petAges.stream().mapToInt(i -> i).max().getAsInt());
-        Assert.assertEquals(stats.getSum(), petAges.stream().mapToInt(i -> i).sum());
-        Assert.assertEquals(stats.getAverage(), petAges.stream().mapToInt(i -> i).average().getAsDouble(), 0.0);
-        Assert.assertEquals(stats.getCount(), petAges.size());
+        //Assert.assertEquals(stats.getMin(), petAges.stream().mapToInt(i -> i).min().getAsInt());
+        Assert.assertEquals(stats.getMin(),agesLazy.min());
+        //Assert.assertEquals(stats.getMax(), petAges.stream().mapToInt(i -> i).max().getAsInt());
+        Assert.assertEquals(stats.getMax(),agesLazy.max());
+        //Assert.assertEquals(stats.getSum(), petAges.stream().mapToInt(i -> i).sum());
+        Assert.assertEquals(stats.getSum(),agesLazy.sum());
+        //Assert.assertEquals(stats.getAverage(), petAges.stream().mapToInt(i -> i).average().getAsDouble(), 0.0);
+        Assert.assertEquals(stats.getAverage(),agesLazy.average(),0.0);
+        //Assert.assertEquals(stats.getCount(), petAges.size());
+        Assert.assertEquals(stats.getCount(),agesLazy.size());
         // Hint: Match = Satisfy
-        Assert.assertTrue(petAges.stream().allMatch(i -> i > 0));
-        Assert.assertFalse(petAges.stream().anyMatch(i -> i == 0));
-        Assert.assertTrue(petAges.stream().noneMatch(i -> i < 0));
-
+        // Assert.assertTrue(petAges.stream().allMatch(i -> i > 0));
+        Assert.assertTrue(agesLazy.allSatisfy(IntPredicates.greaterThan(0)));
+        //Assert.assertFalse(petAges.stream().anyMatch(i -> i == 0));
+        Assert.assertFalse(agesLazy.anySatisfy(IntPredicates.equal(0)));
+        //Assert.assertTrue(petAges.stream().noneMatch(i -> i < 0));
+        Assert.assertTrue(agesLazy.noneSatisfy(IntPredicates.lessThan(0)));
         // Don't forget to comment this out or delete it when you are done
-        Assert.fail("Refactor to Eclipse Collections");
+        //Assert.fail("Refactor to Eclipse Collections");
     }
 
     @Test
     public void streamsToECRefactor1()
     {
         //find Bob Smith
-        Person person =
-                this.people.stream()
-                        .filter(each -> each.named("Bob Smith"))
-                        .findFirst().get();
+        //Person person =
+        //        this.people.stream()
+        //                .filter(each -> each.named("Bob Smith"))
+        //                .findFirst().get();
+
+        Person person = this.people.detect(each ->each.named("Bob Smith"));
 
         //get Bob Smith's pets' names
-        String names =
-                person.getPets().stream()
-                        .map(Pet::getName)
-                        .collect(Collectors.joining(" & "));
-
+        //String names =
+        //        person.getPets().stream()
+        //                .map(Pet::getName)
+        //                .collect(Collectors.joining(" & "));
+        String names = person.getPets().collect(Pet::getName).makeString(" & ");
         Assert.assertEquals("Dolly & Spot", names);
 
         // Don't forget to comment this out or delete it when you are done
-        Assert.fail("Refactor to Eclipse Collections");
+        // Assert.fail("Refactor to Eclipse Collections");
     }
 
     @Test

@@ -67,13 +67,23 @@ public class Exercise3Test extends PetDomainForKata
         Assert.assertEquals(Integer.valueOf(1), petTypeCounts.get(PetType.BIRD));
 
         // Hint: use the appropriate method on this.people to create a Bag<PetType>
-        Bag<PetType> counts = null;
+
+        Bag<PetType> counts = this.people.flatCollect(p->p.getPetTypes()).toBag();
+        
         Assert.assertEquals(2, counts.occurrencesOf(PetType.CAT));
         Assert.assertEquals(2, counts.occurrencesOf(PetType.DOG));
         Assert.assertEquals(2, counts.occurrencesOf(PetType.HAMSTER));
         Assert.assertEquals(1, counts.occurrencesOf(PetType.SNAKE));
         Assert.assertEquals(1, counts.occurrencesOf(PetType.TURTLE));
         Assert.assertEquals(1, counts.occurrencesOf(PetType.BIRD));
+        
+        MutableBag<PetType> countsMultiBag = this.people.flatCollect(Person::getPets).countBy(Pet::getType);
+        Assert.assertEquals(2, countsMultiBag.occurrencesOf(PetType.CAT));
+        Assert.assertEquals(2, countsMultiBag.occurrencesOf(PetType.DOG));
+        Assert.assertEquals(2, countsMultiBag.occurrencesOf(PetType.HAMSTER));
+        Assert.assertEquals(1, countsMultiBag.occurrencesOf(PetType.SNAKE));
+        Assert.assertEquals(1, countsMultiBag.occurrencesOf(PetType.TURTLE));
+        Assert.assertEquals(1, countsMultiBag.occurrencesOf(PetType.BIRD));
     }
 
     @Test
@@ -94,10 +104,14 @@ public class Exercise3Test extends PetDomainForKata
         }
         Verify.assertIterableSize(3, lastNamesToPeople.get("Smith"));
 
-        // Hint: use the appropriate method on this.people to create a Multimap<String, Person>
-        Multimap<String, Person> byLastNameMultimap = null;
+		// Hint: use the appropriate method on this.people to create a Multimap<String, Person>
+        Multimap<String, Person> byLastNameMultimap = this.people.groupBy(Person::getLastName);
+        //the same with functions!
+        Function <Person,String> functionLastNamePerson = person -> person.getLastName();
+        Multimap<String, Person> byLastNameMultimapUsingFunction =  this.people.groupBy(functionLastNamePerson);
 
         Verify.assertIterableSize(3, byLastNameMultimap.get("Smith"));
+        Verify.assertIterableSize(3, byLastNameMultimapUsingFunction .get("Smith"));
     }
 
     @Test
@@ -129,15 +143,17 @@ public class Exercise3Test extends PetDomainForKata
         Verify.assertIterableSize(1, peopleByPetType.get(PetType.BIRD));
         Verify.assertIterableSize(1, peopleByPetType.get(PetType.SNAKE));
 
-        // Hint: use the appropriate method on this.people with a target collection to create a MutableSetMultimap<String, Person>
+        
+		// Hint: use the appropriate method on this.people with a target collection to create a MutableSetMultimap<String, Person>
         // Hint: this.people is a MutableList, so it will return a MutableListMultimap without a target collection
-        MutableSetMultimap<PetType, Person> multimap = null;
+        MutableSetMultimap<PetType, Person> peopleByPetType_MS = this.people.groupByEach(person -> person.getPetTypes(),Multimaps.mutable.set.empty());
 
-        Verify.assertIterableSize(2, multimap.get(PetType.CAT));
-        Verify.assertIterableSize(2, multimap.get(PetType.DOG));
-        Verify.assertIterableSize(1, multimap.get(PetType.HAMSTER));
-        Verify.assertIterableSize(1, multimap.get(PetType.TURTLE));
-        Verify.assertIterableSize(1, multimap.get(PetType.BIRD));
-        Verify.assertIterableSize(1, multimap.get(PetType.SNAKE));
+        this.people.groupBy(person->person.getPets().collect(Pet::getType));
+        Verify.assertIterableSize(2, peopleByPetType_MS .get(PetType.CAT));
+        Verify.assertIterableSize(2, peopleByPetType_MS .get(PetType.DOG));
+        Verify.assertIterableSize(1, peopleByPetType_MS .get(PetType.HAMSTER));
+        Verify.assertIterableSize(1, peopleByPetType_MS .get(PetType.TURTLE));
+        Verify.assertIterableSize(1, peopleByPetType_MS .get(PetType.BIRD));
+        Verify.assertIterableSize(1, peopleByPetType_MS .get(PetType.SNAKE));
     }
 }

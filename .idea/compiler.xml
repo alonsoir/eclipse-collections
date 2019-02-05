@@ -6,18 +6,27 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="candy-kata" />
-        <module name="company-kata" />
+        <module name="candy-kata (1)" />
+        <module name="candy-kata (2)" />
+        <module name="candy-kata (3)" />
+        <module name="candy-kata (3) (org.eclipse.collections.kata)" />
+        <module name="company-kata (1)" />
+        <module name="company-kata (2)" />
+        <module name="company-kata (3)" />
+        <module name="company-kata (3) (org.eclipse.collections.kata)" />
         <module name="pet-kata" />
+        <module name="pet-kata (1)" />
+        <module name="pet-kata (2)" />
+        <module name="pet-kata (3)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="candy-kata" target="1.8" />
-      <module name="company-kata" target="1.8" />
-      <module name="eclipse-collections-kata" target="1.8" />
-      <module name="eclipse-collections-kata-parent" target="1.8" />
-      <module name="pet-kata" target="1.8" />
+      <module name="candy-kata (2)" target="1.5" />
+      <module name="candy-kata (3)" target="1.8" />
+      <module name="company-kata (2)" target="1.5" />
+      <module name="company-kata (3)" target="1.8" />
+      <module name="pet-kata (2)" target="1.5" />
+      <module name="pet-kata (3)" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
-
